@@ -155,13 +155,13 @@ router.post('/createUser' ,function(req, res){  //Crear usuario nuevo
 
 /**
  * @swagger
- * /usuarios/:
+ * /usuarios/updateUser/{id_user}:
  *  put:
  *    description: modificar usuario
  *    parameters:
- *    - name: indice
- *      description: indice usuario
- *      in: formData
+ *    - name: id_user
+ *      description: ID usuario
+ *      in: path
  *      required: true
  *      type: string
  *    - name: username
@@ -169,33 +169,33 @@ router.post('/createUser' ,function(req, res){  //Crear usuario nuevo
  *      in: formData
  *      required: true
  *      type: string
- *    - name: lastname
- *      description: lastname
+ *    - name: username_name
+ *      description: nombre
  *      in: formData
  *      required: true
  *      type: string
- *    - name: email
+ *    - name: user_email
  *      description: Email user
  *      in: formData
  *      required: true
  *      type: string
- *    - name: tel
+ *    - name: user_tel
  *      description: phone user
  *      in: formData
  *      required: true
  *      type: string
- *    - name: address
- *      description: address user
+ *    - name: user_address
+ *      description: user_address
  *      in: formData
  *      required: true
  *      type: string
- *    - name: password
- *      description: password
+ *    - name: user_password
+ *      description: user_password
  *      in: formData
  *      required: true
  *      type: string
- *    - name: perfil
- *      description: perfil
+ *    - name: user_idRol
+ *      description: user_idRol
  *      in: formData
  *      required: true
  *      type: string
@@ -222,25 +222,20 @@ router.put('/updateUser/:id_user', /*validar_indice,  */ function(req, res){  //
 
 /**
  * @swagger
- * /usuarios/:
+ * /usuarios/delete/{id_user}:
  *  delete:
  *    description: eliminar usuario
  *    parameters:
- *    - name: indice
- *      description: indice usuario
- *      in: formData
+ *    - name: id_user
+ *      description: Id usuario
+ *      in: path
  *      required: true
- *      type: string
- *    - name: username
- *      description: username perfil
- *      in: formData
- *      required: true
- *      type: string
+ *      type: integer
  *    responses:
  *      200:
  *        description: Success
  */
-router.delete('/delete/:id_user', validation.auth, function(req, res){
+router.delete('/delete/:id_user', validation.authAdmin, function(req, res){
     // usuarios.splice(req.body.indice, 1);
     // res.send('Usuario Eliminado')
     usersController.deleteUser(req, res)

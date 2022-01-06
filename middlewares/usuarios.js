@@ -85,7 +85,6 @@ const authAdmin = (req, res, next) => {
         const detoken = jwt.verify(cleantoken, process.env.secretJWT);
         console.log("detoken", detoken)
         if(detoken.usuario.rol == 1){
-            console.log("prueba si entra")
             return next();
         }else{
             res.json({msg: "no tenes permiso de administrador"})

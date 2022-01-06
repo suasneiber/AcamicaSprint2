@@ -66,6 +66,7 @@ const updateUser = async (req, res) =>  {
         user_tel : req.body.user_tel,
         user_address : req.body.user_address,
         user_password : req.body.user_password,
+        user_idRol :req.body.user_idRol
     },
     { 
         where: { idUser: req.params.id_user } 
@@ -81,7 +82,6 @@ const deleteUser = async(req, res) => {
     }) 
     if(!id_user) return res.status(404).json({msj: "Usuario no encontrado"})
 
-    console.log("id_user", id_user)
     const result = await userModel.destroy({
         where: {idUser : id_user.dataValues.idUser}
     })
