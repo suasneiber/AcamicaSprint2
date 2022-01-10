@@ -17,12 +17,7 @@ const ordersController = require('../controller/order.controller')
  *      200:
  *        description: Success
  */
-router.get('/', function(req, res){
-    //let pedido = pedidos.forEach(order => console.log('detalles 1 :',order.detalle));
-
-    // res.send({'pedido': pedidos})
-    // console.log("clg",pedido)
-
+router.get('/', midUsuario.authAdmin,function(req, res){
     ordersController.listOrder()
     .then((result) => {
         res.status(200).send({
@@ -58,19 +53,7 @@ router.get('/', function(req, res){
  *      200:
  *        description: Success
  */
-router.post('/orderUser', function(req, res){
-    // const user = req.body.username;
-    // let pedidoxUsusario = pedidos.filter(pedido => pedido.username == req.body.username)
-    // let index = usuarios.findIndex(usuario => usuario.username == req.body.username)
-
-
-    // if(usuarios[index].perfil == "admin"){
-    //     res.send({"datos": pedidos})
-    // }
-    // else{
-    //     res.send({"datos": pedidoxUsusario})
-    // }
-
+router.post('/orderUser', midUsuario.authAdmin ,function(req, res){
     ordersController.userOrder(req)
     .then((result) => {
         res.status(200).send({
@@ -124,7 +107,7 @@ router.post('/orderUser', function(req, res){
  *      200:
  *        description: Success
  */
-router.post('/crearpedido', function(req, res){
+router.post('/crearpedido', midUsuario.auth, function(req, res){
    
     ordersController.createOrder(req, res)
         .then((result) => {
@@ -180,7 +163,7 @@ router.post('/crearpedido', function(req, res){
  *        description: Success
  */
 
-router.put('/modificar/:id', /*validar_indice,*/ function(req, res){
+router.put('/modificar/:id', midUsuario.auth, function(req, res){
     
     ordersController.updateOrder(req,res)
 })
@@ -210,7 +193,7 @@ router.put('/modificar/:id', /*validar_indice,*/ function(req, res){
  *      200:
  *        description: Success
  */
-router.put('/modificarEstado', validar_indice,  midUsuario.auth, function(req, res){
+router.put('/modificarEstado', midUsuario.authAdmin, function(req, res){
     pedidos[req.body.indice].estado = req.body.estado;
     
     res.send("Estado modificado")

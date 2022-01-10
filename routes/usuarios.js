@@ -23,10 +23,6 @@ const validation = require('../middlewares/usuarios')
  *        description: Success
  */
 router.get('/', validation.authAdmin ,async function(req, res, next){
-    // res.send({"usuarios": usuarios})
-    // console.log("usuarios")
-
-    
     let data = await usersController.listUsers()
     res.json(data);
     
@@ -52,13 +48,7 @@ router.get('/', validation.authAdmin ,async function(req, res, next){
  *        description: Success
  */
 router.post('/login', validation.autUser,  function(req, res,next){
-    // let user = req.body.username;
-    // let email = req.body.email;
-    // let contraseña = req.body.password;
-
-    // let validarLogin = usuarios.find(usuario => usuario.password === contraseña && usuario.email === email); 
-    // let idUser = usuarios.filter(usuarios => usuarios.email === email)
-    usersController.userLogin(req, res)
+    //usersController.userLogin(req, res)
 
     /* 
         const cripty = async (data) => {
@@ -80,7 +70,7 @@ router.post('/login', validation.autUser,  function(req, res,next){
 
 /**
  * @swagger
- * /usuarios/:
+ * /usuarios/createUser:
  *  post:
  *    description: Crear Usuario
  *    parameters:
@@ -89,28 +79,28 @@ router.post('/login', validation.autUser,  function(req, res,next){
  *      in: formData
  *      required: true
  *      type: string
- *    - name: Lastname
- *      description: lastname
+ *    - name: name
+ *      description: name
  *      in: formData
  *      required: true
  *      type: string
  *    - name: email
- *      description: Email user
+ *      description: email
  *      in: formData
  *      required: true
  *      type: string
- *    - name: email confirm
- *      description: EmailConfirm
+ *    - name: emailConfirm
+ *      description: emailConfirm
  *      in: formData
  *      required: true
  *      type: string
- *    - name: phone
- *      description: phone user
+ *    - name: tel
+ *      description: tel
  *      in: formData
  *      required: true
  *      type: string
  *    - name: address
- *      description: address user
+ *      description: address
  *      in: formData
  *      required: true
  *      type: string
@@ -119,38 +109,12 @@ router.post('/login', validation.autUser,  function(req, res,next){
  *      in: formData
  *      required: true
  *      type: string
- *    - name: perfil
- *      description: perfil
- *      in: formData
- *      required: true
- *      type: string
  *    responses:
  *      200:
  *        description: Success
  */
 router.post('/createUser' ,function(req, res){  //Crear usuario nuevo
-    // let email = req.body.email;
-    // let validar_email = usuarios.find(usuario => usuario.email === email)
-    // console.log(email)
-    
-        // usuarios.push(req.body)
-        // res.send('usuario Creado')
-
-        usersController.createUser(req)
-        .then(() => {
-            res.status(200).send({
-                status: 200,
-                message: "Data Save Successfully",
-                });
-        })
-        .catch(error => {
-            res.status(400).send({
-            message: "Unable to insert data",
-            errors: error,
-            status: 400
-            });
-        });
-    
+        usersController.createUser(req, res)
 })
 
 /**
@@ -203,7 +167,7 @@ router.post('/createUser' ,function(req, res){  //Crear usuario nuevo
  *      200:
  *        description: Success
  */
-router.put('/updateUser/:id_user', /*validar_indice,  */ function(req, res){  //actualizar usuario
+router.put('/updateUser/:id_user', validation.auth, function(req, res){  //actualizar usuario
     usersController.updateUser(req,res)
     // .then(() => {
     //     res.status(200).send({
@@ -236,22 +200,7 @@ router.put('/updateUser/:id_user', /*validar_indice,  */ function(req, res){  //
  *        description: Success
  */
 router.delete('/delete/:id_user', validation.authAdmin, function(req, res){
-    // usuarios.splice(req.body.indice, 1);
-    // res.send('Usuario Eliminado')
     usersController.deleteUser(req, res)
-    // .then(() => {
-    //     res.status(200).send({
-    //         status: 200,
-    //         message: "Data Delete Successfully",
-    //         });
-    // })
-    // .catch(error => {
-    //     res.status(400).send({
-    //     message: "Unable to insert data",
-    //     errors: error,
-    //     status: 400
-    //     });
-    // });
 })
 
 module.exports = router;

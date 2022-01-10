@@ -65,7 +65,7 @@ router.get('/', usuarioValidate.auth, (req, res, next)=> {
  *      200:
  *        description: Success
  */
-router.post('/', usuarioValidate.auth , function(req, res, next){
+router.post('/', usuarioValidate.authAdmin , function(req, res, next){
 
 
     productsController.createProduct(req)
@@ -82,21 +82,6 @@ router.post('/', usuarioValidate.auth , function(req, res, next){
         status: 400
         });
     });
-
-    // let nuevoProducto = {}
-
-    // let idProd = productos[parseInt(productos.length - 1)].idP + 1;
-    // if(usuario.validar_admin){
-       
-    //     nuevoProducto.idP = idProd;
-    //     nuevoProducto.nombre = req.body.nombre
-    //     nuevoProducto.precio = req.body.precio 
-
-    //     productos.push(nuevoProducto)        
-    //     res.send("producto creado")
-    // }else{
-    //     res.send("usuario no registrado")
-    // }
 
 })
 
@@ -130,7 +115,7 @@ router.post('/', usuarioValidate.auth , function(req, res, next){
  *      200:
  *        description: Success
  */
-router.put("/:id", /*validar_indice,  usuarioValidate.validar_admin,*/ function(req, res){
+router.put("/:id", usuarioValidate.authAdmin, function(req, res){
     // productos[req.body.indice].nombre = req.body.nombre;
     // productos[req.body.indice].precio = req.body.precio;
 
@@ -158,7 +143,7 @@ router.put("/:id", /*validar_indice,  usuarioValidate.validar_admin,*/ function(
  *      200:
  *        description: Success
  */
-router.delete('/:id', /*usuarioValidate.validar_admin,*/ function(req, res){
+router.delete('/:id', usuarioValidate.authAdmin, function(req, res){
     
 
     productsController.deleteProduct(req, res)

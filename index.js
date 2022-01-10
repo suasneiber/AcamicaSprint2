@@ -35,6 +35,7 @@ app.use('/productos', productos)
 app.use('/pedidos', pedidos)
 app.use('/pagos', pagos)
 
+
 app.use('/api-docs',
   swaggerUI.serve,
   swaggerUI.setup(swaggerDocs));

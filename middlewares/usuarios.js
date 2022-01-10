@@ -1,4 +1,5 @@
 require("dotenv").config();
+const md5 = require('md5');
 const Sequelize = require('sequelize');
 const connection = require("../config/config");
 const userModel = require('../models/usuarios')(connection, Sequelize);
@@ -6,12 +7,16 @@ const jwt = require('jsonwebtoken');
 let token = "";
 
 const autUser = async (req, res) => {
+    let compararPass =  md5(req.body.password)
+    
     const email = await userModel.findOne({
         where:{
-                user_email : req.body.email,
-                user_password : req.body.password
+            user_email : req.body.email,
+            user_password : compararPass
         }
     });
+
+
     if(email){
         const payload = {
             usuario: {

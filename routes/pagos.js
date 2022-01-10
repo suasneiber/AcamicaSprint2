@@ -56,7 +56,7 @@ const paysController = require('../controller/pays.controller')
  *        description: Success
  */
 
-router.post('/', midUsuario.auth, function(req, res){
+router.post('/', midUsuario.authAdmin, function(req, res){
     let nuevoPago = {}
 
     const idPago = pagos[parseInt(pagos.length - 1)].id + 1;
@@ -96,7 +96,7 @@ router.post('/', midUsuario.auth, function(req, res){
  *      200:
  *        description: Success
  */
-router.put('/', validar_indice ,midUsuario.auth, function(req, res){
+router.put('/',midUsuario.authAdmin, function(req, res){
     
         pagos[req.body.indice].medio = req.body.medio
         res.send('medio de pago modificado.')
@@ -126,7 +126,7 @@ router.put('/', validar_indice ,midUsuario.auth, function(req, res){
  *        description: Success
  */
 
-router.delete('/', validar_indice, midUsuario.auth, function(req, res){
+router.delete('/', midUsuario.authAdmin, function(req, res){
     pagos.splice(req.body.indice, 1);
     res.send('Medio de Pago Eliminado')
 })

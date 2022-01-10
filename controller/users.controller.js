@@ -1,4 +1,5 @@
 require("dotenv").config();
+const md5 = require('md5');
 const Sequelize = require('sequelize');
 const connection = require("../config/config");
 const userModel = require('../models/usuarios')(connection, Sequelize);
@@ -7,47 +8,57 @@ const { Op } = require("sequelize");
 const listUsers = async () => await userModel.findAll();
 
 const userLogin = async (req, res) => {
-    const userDetail = await userModel.findOne({
-        where:{
-            [Op.and]: [
-                {user_email: req.body.email},
-                {user_password: req.body.password}
-            ]
-        }
-    });
-    if(!userDetail){
-        return res.status(400).json({msj: "datos inexistentes"})
-    }
+
+    // const userDetail = await userModel.findOne({
+    //     where:{
+    //         [Op.and]: [
+    //             {user_email: req.body.email},
+    //             {user_password: decryptPassword}
+    //         ]
+    //     }
+    // });
+    // if(!userDetail){
+    //     return res.status(400).json({msj: "datos inexistentes"})
+    // }
     
-    return res.status(200).json({msj: "inicio de sesion exitoso"});
+    // return res.status(200).json({msj: "inicio de sesion exitoso"});
 }
 
-const createUser = async (req) => {
-
+const createUser = async (req, res) => {
     const findUsers = await userModel.findOne({
         where:{
             [Op.or]:
             [{ user_email: req.body.email },
-             {username : req.body.username}]
+            // {username : req.body.username}
+            ]
         }
     });
         if(findUsers == null){
-            const dataUser = await userModel.build({
-                username : req.body.username,
-                username_name : req.body.name,
-                user_email : req.body.email,
-                user_tel : req.body.tel,
-                user_address : req.body.address,
-                user_password : req.body.password,
-                user_idRol : req.body.rol,
-            });
-             const result = await dataUser.save()
-             return result;
+            if(req.body.email != req.body.emailConfirm){
+                res.json({msg: "El email no coincide"})
+            }
+            else{
+                let passwordEncrypt = md5(req.body.password)
+                console.log("passEnc", passwordEncrypt)
+                const dataUser = await userModel.build({
+
+                    username : req.body.username,
+                    username_name : req.body.name,
+                    user_email : req.body.email,
+                    user_tel : req.body.tel,
+                    user_address : req.body.address,
+                    user_password : passwordEncrypt,
+                    user_idRol : 2,
+                });
+                const result = await dataUser.save()
+                return res.status(200).json({msg: "usuario creado"});
+            }
         }
         else{
-            res.json('Usuario duplicado, intente otro')
+            res.json({msg:'Email duplicado, intente otro'})
         }
 }
+
 
 const updateUser = async (req, res) =>  {
     const idUser = await userModel.findOne({
@@ -71,7 +82,7 @@ const updateUser = async (req, res) =>  {
     { 
         where: { idUser: req.params.id_user } 
     })
-    return res.status(200).json({msj: "usuario modificado"});
+    return res.status(200).json({msg: "usuario modificado"});
 }
 
 const deleteUser = async(req, res) => {
