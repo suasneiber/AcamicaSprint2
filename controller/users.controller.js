@@ -69,14 +69,14 @@ const updateUser = async (req, res) =>  {
     if(!idUser){
         return res.status(404).json({msj: "usuario no encontrado"})
     } 
-
+    let passwordEncrypt = md5(req.body.password)
     const result = await userModel.update({
         username : req.body.username,
         username_name : req.body.username_name,
         user_email : req.body.user_email,
         user_tel : req.body.user_tel,
         user_address : req.body.user_address,
-        user_password : req.body.user_password,
+        user_password : passwordEncrypt,
         user_idRol :req.body.user_idRol
     },
     { 

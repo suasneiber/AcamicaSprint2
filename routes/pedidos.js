@@ -36,41 +36,39 @@ router.get('/', midUsuario.authAdmin,function(req, res){
 
 })
 
-//Puedo traer los pedidos con el ID de usuario
-
 /**
  * @swagger
- * /pedidos/:
- *  post:
- *    description: Mostrar pedidos por Usuario
+ * /pedidos/porusuario:
+ *  get:
+ *    description: Lista todos los Pedidos Por usuario
  *    parameters:
- *    - name: username
- *      description: nombre de usuario
- *      in: formData
- *      required: true
- *      type: string
+ *      - name: authorization
+ *        desccription: token de usuario
+ *        in: header
+ *        required: false
+ *        type: string
  *    responses:
  *      200:
  *        description: Success
  */
-router.post('/orderUser', midUsuario.authAdmin ,function(req, res){
-    ordersController.userOrder(req)
-    .then((result) => {
-        res.status(200).send({
-            status:200,
-            message: "Data find Successfully",
-            data: result
-        });
-    })
-    .catch(error => {
-        res.status(400).send({
-          message: "Unable to find data",
-          errors: error,
-          status: 400
-        });
-      })
-})
+ router.get('/porusuario', midUsuario.auth,  function(req, res){
+    ordersController.userOrder(req, res)
+    // .then((result) => {
+    //     res.status(200).send({
+    //         status:200,
+    //         message: "Data find Successfully",
+    //         data: result
+    //     });
+    // })
+    // .catch(error => {
+    //     res.status(400).send({
+    //       message: "Unable to find data",
+    //       errors: error,
+    //       status: 400
+    //     });
+    //   });
 
+})
 
 /**
  * @swagger
@@ -78,31 +76,30 @@ router.post('/orderUser', midUsuario.authAdmin ,function(req, res){
  *  post:
  *    description: Crear Pedido
  *    parameters:
- *    - name: idUser
- *      description: ID de usuario
- *      in: formData
- *      required: true
- *      type: string
- *    - name: idPays
- *      description: idMethodPay_order
- *      in: formData
- *      required: true
- *      type: string
- *    - name: total 
- *      description: precio total
- *      in: formData
- *      required: true
- *      type: string
- *    - name: direccion
- *      description: dirección
- *      in: formData
- *      required: true
- *      type: string
- *    - name: productos
- *      description: id de productos
- *      in: formData
- *      required: true
- *      type: string
+ *      - name: authorization
+ *        desccription: token de usuario
+ *        in: header
+ *        required: false
+ *        type: string
+ *      - name: idPays
+ *        description: idMethodPay_order
+ *        in: formData
+ *        type: integer
+ *        required: true
+ *      - name: direccion
+ *        description: user address
+ *        in: formData
+ *        type: string
+ *        required: true
+ *      - name: productos[]
+ *        description: id del producto a pedir
+ *        in: formData
+ *        collectionFormat: multi
+ *        type: array
+ *        properties:
+ *          id:
+ *          type: integer
+ *        required: true
  *    responses:
  *      200:
  *        description: Success
@@ -124,30 +121,28 @@ router.post('/crearpedido', midUsuario.auth, function(req, res){
             status: 400
             });
         });
-    })
-
+     })
 
 /**
  * @swagger
- * /pedidos/modificar:
+ * /pedidos/modificar/{id_order}:
  *  put:
  *    description: Modificar Pedido
  *    parameters:
- *    - name: indice
- *      description: indice de pedido
- *      in: formData
+ *    - name: id_order
+ *      description: id de pedido
+ *      in: path
  *      required: true
  *      type: string
- *    - name: detalle
+ *    - name: productos[]
  *      description: id de productos
  *      in: formData
+ *      collectionFormat: multi
+ *      type: array
+ *      properties:
+ *        id:
+ *        type: integer
  *      required: true
- *      type: string
- *    - name: total 
- *      description: precio total
- *      in: formData
- *      required: true
- *      type: string
  *    - name: medio_de_pago
  *      description: medio de pago
  *      in: formData
@@ -162,8 +157,7 @@ router.post('/crearpedido', midUsuario.auth, function(req, res){
  *      200:
  *        description: Success
  */
-
-router.put('/modificar/:id', midUsuario.auth, function(req, res){
+router.put('/modificar/:id_order', midUsuario.auth, function(req, res){
     
     ordersController.updateOrder(req,res)
 })

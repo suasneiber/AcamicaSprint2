@@ -33,55 +33,43 @@ const autUser = async (req, res) => {
     }
 
 }
-// function auth(req, res, next)   {
-//      // Leer el token del header
-    
-//     let token =  req.headers['x-access-token'] || req.headers['authorization']
-//     console.log("token es : ", token)
 
-//     //Revisar si no hay token
-//     if (!token) {
-//         return res.status(401).json({msg: 'No hay token, permiso no válido'})
-//     }
-
-//     if(token.startsWith('Bearer ')){
-//         token= token.slice(7, token.length)
-//         console.log("token nuevo es : ", token)
-//     }
-
-//      // Validar el token
-    
-    
-     
-//         //  if(token){
-//         //      jwt.verify(token, process.env.secretJWT), (error, decoded) => {
-//         //          if(error){
-//         //              return res.json({
-//         //                  message: "el token no es válido "
-//         //              })
-//         //          }else{
-//         //              res.decoded = decoded;
-//         //              next()
-//         //          }
-//         //      }
-//         //  }
-//         //  const cifrado = jwt.verify(token, process.env.secretJWT)        
-//         //  req.usuario= cifrado.usuario
-//         //  console.log(cifrado);
-//         // next()
-     
-//      //    res.status(401).json({msg: 'Token no válido'})
-     
-// }
+const consumirToken = (req, res, next) => {
+    try {
+        let cleantoken = token;
+        cleantoken = cleantoken.replace('Bearer ', '');
+        const detoken = jwt.verify(cleantoken, process.env.secretJWT);
+        idUsuario = detoken.usuario.id
+        console.log("contenido de token", idUsuario);
+        
+        return idUsuario;
+    } catch (error) {
+        res.json({msg: "Error de Token"});
+    }
+}
 const auth = (req, res, next) => {
     try {
         let cleantoken = token;
         cleantoken = cleantoken.replace('Bearer ', '');
         const detoken = jwt.verify(cleantoken, process.env.secretJWT);
-        next();
+        idUsuario = detoken.usuario.id;
+        
+        return next();
     } catch (error) {
         res.json({msg: "Error de Token"});
     }
+}
+
+
+const firmaToken = (token) => {
+    let desToken = autUser(token)
+    
+    if (desToken != false) {
+        return desToken;
+    } else {
+        return false;
+    }
+
 }
 const authAdmin = (req, res, next) => {
     try {
@@ -92,12 +80,14 @@ const authAdmin = (req, res, next) => {
         if(detoken.usuario.rol == 1){
             return next();
         }else{
-            res.json({msg: "no tenes permiso de administrador"})
+                res.json({msg: "no tenes permiso de administrador"})
         }
     } catch (error) {
-        res.json({msg: "Error de Token"});
+        res.json({msg: "No iniciaste sesión"});
     }
 }
 
 module.exports = {autUser,
+                  consumirToken,
+                  firmaToken,
                   auth, authAdmin};

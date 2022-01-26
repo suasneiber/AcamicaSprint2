@@ -5,42 +5,71 @@ const orderModel = require('../models/pedidos')(connection, Sequelize);
 const { Op } = require("sequelize");
 const productsModel = require('../models/productos')(connection, Sequelize);
 const productsOrderModel = require('../models/products_order')(connection, Sequelize);
+const token = require('../middlewares/usuarios')
+const usersModel = require('../models/usuarios')(connection, Sequelize);
 
 let lastId;
 const listOrder = async() => await orderModel.findAll();
 
-const userOrder =async(req) => {
-    const orderXuser = await orderModel.findAll({
-        where:{id_user_order: req.body.id_user}
-    });
-    return orderXuser;
+const userOrder = async(req, res) => {
+    console.log("entrando al controlador");
+    
+    let desencripToken = token.consumirToken(req.headers.authorization)
+    console.log("desencripToken", desencripToken);
+    
+    const userId = await usersModel.findOne({
+        where:{
+            idUser : desencripToken
+        }
+    })
+    //console.log("idUser", userId.dataValues);
+    
+    if(userId== null){
+        res.json({msj: "token no valido"})
+    }else{
+        const orderXuser = await orderModel.findAll({
+            where: {
+                id_user_order : desencripToken
+            }
+        })
+
+        //console.log("orderXuser", orderXuser);
+        res.status(200).json({orderXuser})
+    }
 }
 
 const createOrder = async(req,res) => {
-    let totalOrder = 0 ;
-
+    let totalOrder = 0;
+    let desencripToken = token.consumirToken(req.headers.authorization)
+    console.log("desencripToken", desencripToken);
+    
+    let newProductos = req.body.productos 
+    console.log("req.body.productos.length", newProductos.length)
+    
     for(let i = 0 ; i<req.body.productos.length; i++){
         const priceProduct =   await productsModel.findOne({
             where:{
-                idProduct: req.body.productos[i].id
+                idProduct: req.body.productos[i]
             }
-        });
+        })
         
-        console.log("orderP1", priceProduct)
-        let precioU = priceProduct.dataValues.productPrice;
-        console.log("precioU", precioU)
+         console.log("orderP1", priceProduct.dataValues)
+         let precioU = priceProduct.dataValues.productPrice;
+         console.log("precioU", precioU)
+         let auxprecio = precioU
 
-        let cant = req.body.productos[i].cantidad
-        console.log("cant", cant)
+         let cant = req.body.productos.length
+         console.log("cant", cant)
 
-        totalProduct = precioU * cant
-        console.log("totalProduct", totalProduct)
+         totalProduct = precioU
+         console.log("totalProduct", totalProduct)
 
-        totalOrder = totalOrder + totalProduct
-        console.log("totalorder",totalOrder)
+         totalOrder = totalOrder + totalProduct
+         console.log("totalorder",totalOrder)
     }
+    
         const orderData = await orderModel.create({
-            id_user_order : req.body.idUser,
+            id_user_order : desencripToken,
             idMethodPay_order : req.body.idPays,
             id_state_order : 1,
             price_order: totalOrder,
@@ -49,36 +78,37 @@ const createOrder = async(req,res) => {
         })
         
         
+         console.log('orderDataID', orderData.dataValues);
         
-        console.log('orderDataNull', orderData.null)
-        //console.log("order", req.body)
+    //     console.log('orderDataNull', orderData.null)
+    //     console.log("order", req.body)
         
         
 
         for(let i = 0 ; i<req.body.productos.length; i++){
-            console.log('prod.cant', req.body.productos[i].id)
+            //console.log('prod.cant', req.body.productos[i].id)
             const priceProduct =   await productsModel.findOne({
                 where:{
-                    idProduct: req.body.productos[i].id
+                    idProduct: req.body.productos[i]
                 }
             });
         let precioU = priceProduct.dataValues.productPrice;
-        let cant = req.body.productos[i].cantidad
+        let cant = req.body.productos.length
         totalProduct = precioU * cant
         // auxPrice = auxPrice + totalProduct;
 
             const prodOrder = await productsOrderModel.create({
             
                 id_order : orderData.null,
-                id_product : req.body.productos[i].id,
-                quantity : cant,
-                price : totalProduct
+                id_product : req.body.productos[i],
+                quantity: 1,
+                price : precioU
         })
     }
 
-    const resultado = await orderData.save();
-    console.log("resultado", resultado)
-        return orderData;
+     const resultado = await orderData.save();
+    //console.log("resultado", resultado.dataValues)
+    return orderData;
 
 }
 
@@ -90,33 +120,36 @@ const updateOrder = async(req,res) => {
     for(let i = 0 ; i<req.body.productos.length; i++){
         const priceProduct =   await productsModel.findOne({
             where:{
-                idProduct: req.body.productos[i].id
+                idProduct: req.body.productos[i]
             }
         });
         
-        console.log("orderP1", priceProduct)
+        //console.log("orderP1", priceProduct.dataValues)
         let precioU = priceProduct.dataValues.productPrice;
-        console.log("precioU", precioU)
+        //console.log("precioU", precioU)
+        let auxprecio = precioU
 
-        let cant = req.body.productos[i].cantidad
-        console.log("cant", cant)
+        let cant = req.body.productos.length
+        //console.log("cant", cant)
 
-        totalProduct = precioU * cant
-        console.log("totalProduct", totalProduct)
+        totalProduct = precioU
+        //console.log("totalProduct", totalProduct)
 
         totalOrder = totalOrder + totalProduct
-        console.log("totalorder",totalOrder)
+        //console.log("totalorder",totalOrder)
     }
-    console.log("pago", req.body.idPays, "direccion", req.body.direccion)
+    
     const updateId = await orderModel.findOne({
         where: {
-            idOrder: req.params.id
+            idOrder: parseInt(req.params.id_order)
         }
     })
-    console.log(updateId.price_order)
+    
 
-    console.log("data", updateId.price_order)
-    if(!updateId) console.log("Pedido no existe")
+    
+    if(!updateId){
+        console.log("Pedido no existe")
+    }
     else{
         if(updateId.id_state_order > 1){
             res.json({state: "el pedido ya no puede ser modificado"})
@@ -127,7 +160,7 @@ const updateOrder = async(req,res) => {
                     price_order : totalOrder
             },{
                 where:{
-                    idOrder: req.params.id
+                    idOrder: parseInt(req.params.id_order)
                 }
             })
         }
@@ -136,40 +169,46 @@ const updateOrder = async(req,res) => {
 
     const updateProduc = await productsOrderModel.findAll({
         where: {
-            id_order: req.params.id
+            id_order: parseInt(req.params.id_order)
         }
     })
 
     if(!updateProduc) console.log("id no encontrado")
     else{
-        const borrarId = await productsOrderModel.destroy({
-            where: {id_order : req.params.id}
+
+        const delOrderProd = await productsOrderModel.destroy({
+            where:{
+                id_order: parseInt(req.params.id_order)
+            }
         })
+
+        for(let i = 0 ; i<req.body.productos.length; i++){
+            console.log('prod.cant', req.body.productos.length)
+            const priceProduct =   await productsModel.findOne({
+                where:{
+                    idProduct: req.body.productos[i]
+                }
+            });
+            console.log("priceProduct", priceProduct.dataValues.productPrice);
+            
+        let precioU = priceProduct.dataValues.productPrice;
+    
+            const prodOrder = await productsOrderModel.create({
+                id_order: parseInt(req.params.id_order),
+                id_product : req.body.productos[i],
+                quantity : 1,
+                price : precioU
+                }/*,{
+                    where:{
+                        id_order: parseInt(req.params.id_order)
+                }
+                }*/)
+            }
+            return res.status(200).json({'msg': updateProduc})
+   
     }
 
-    for(let i = 0 ; i<req.body.productos.length; i++){
-        console.log('prod.cant', req.body.productos[i].id)
-        const priceProduct =   await productsModel.findOne({
-            where:{
-                idProduct: req.body.productos[i].id
-            }
-        });
-    let precioU = priceProduct.dataValues.productPrice;
-    let cant = req.body.productos[i].cantidad
-    totalProduct = precioU * cant
-    // auxPrice = auxPrice + totalProduct;
 
-        const prodOrder = await productsOrderModel.create({
-        
-            id_order : req.params.id,
-            id_product : req.body.productos[i].id,
-            quantity : cant,
-            price : totalProduct
-    })
-}
-
-
-return res.json({id: req.params.id});
     }
 module.exports = {listOrder,
                   userOrder,

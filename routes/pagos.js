@@ -17,7 +17,7 @@ const paysController = require('../controller/pays.controller')
  *      200:
  *        description: Success
  */
- router.get('/', midUsuario.auth  ,function(req, res, next){
+ router.get('/', midUsuario.authAdmin  ,function(req, res, next){
     paysController.listPays()
     .then((result) => {
         res.status(200).send({
@@ -46,27 +46,13 @@ const paysController = require('../controller/pays.controller')
  *      in: formData
  *      required: true
  *      type: string
- *    - name: username
- *      description: usuario rol
- *      in: formData
- *      required: true
- *      type: string
  *    responses:
  *      200:
  *        description: Success
  */
 
 router.post('/', midUsuario.authAdmin, function(req, res){
-    let nuevoPago = {}
-
-    const idPago = pagos[parseInt(pagos.length - 1)].id + 1;
-    if(midUsuario.validar_admin){
-        nuevoPago.id = idPago;
-        nuevoPago.medio = req.body.medio;
-
-        pagos.push (nuevoPago)
-        res.send('medio de pago creado.')
-    }
+    paysController.paysCreate(req, res)
 
 })
 
@@ -84,11 +70,6 @@ router.post('/', midUsuario.authAdmin, function(req, res){
  *      type: string
  *    - name: medio
  *      description: medio de pago
- *      in: formData
- *      required: true
- *      type: string
- *    - name: username
- *      description: perfil de usuario
  *      in: formData
  *      required: true
  *      type: string

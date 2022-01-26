@@ -47,7 +47,7 @@ router.get('/', validation.authAdmin ,async function(req, res, next){
  *      200:
  *        description: Success
  */
-router.post('/login', validation.autUser,  function(req, res,next){
+router.post('/login', validation.autUser, validation.firmaToken,  function(req, res,next){
     //usersController.userLogin(req, res)
 
     /* 
@@ -153,13 +153,8 @@ router.post('/createUser' ,function(req, res){  //Crear usuario nuevo
  *      in: formData
  *      required: true
  *      type: string
- *    - name: user_password
- *      description: user_password
- *      in: formData
- *      required: true
- *      type: string
- *    - name: user_idRol
- *      description: user_idRol
+ *    - name: password
+ *      description: password
  *      in: formData
  *      required: true
  *      type: string
@@ -169,19 +164,6 @@ router.post('/createUser' ,function(req, res){  //Crear usuario nuevo
  */
 router.put('/updateUser/:id_user', validation.auth, function(req, res){  //actualizar usuario
     usersController.updateUser(req,res)
-    // .then(() => {
-    //     res.status(200).send({
-    //         status: 200,
-    //         message: "Data Update Successfully",
-    //         });
-    // })
-    // .catch(error => {
-    //     res.status(400).send({
-    //     message: "Unable to insert data",
-    //     errors: error,
-    //     status: 400
-    //     });
-    // });
 })
 
 /**

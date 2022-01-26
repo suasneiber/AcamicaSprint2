@@ -17,6 +17,7 @@ const createProduct = async (req) => {
   }
 
   const updateProduct = async (req,res) => {
+    console.log("req.params.id", req.params.id)
     const id_prd = await productsModel.findOne({
       where:{
         idProduct: parseInt(req.params.id)

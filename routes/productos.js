@@ -46,11 +46,6 @@ router.get('/', usuarioValidate.auth, (req, res, next)=> {
  *  post:
  *    description: Crear Producto
  *    parameters:
- *    - name: username
- *      description: perfil de usuario
- *      in: formData
- *      required: true
- *      type: string
  *    - name: nombre
  *      description: nombre
  *      in: formData
@@ -87,22 +82,17 @@ router.post('/', usuarioValidate.authAdmin , function(req, res, next){
 
 /**
  * @swagger
- * /productos:
+ * /productos/{id}:
  *  put:
  *    description: Modificar Producto
  *    parameters:
- *    - name: indice
- *      description: id de producto
- *      in: formData
- *      required: true
- *      type: string
- *    - name: username
- *      description: perfil de usuario
- *      in: formData
+ *    - name: id
+ *      description: id
+ *      in: path
  *      required: true
  *      type: string
  *    - name: nombre
- *      description: nombre de producto
+ *      description: nombre
  *      in: formData
  *      required: true
  *      type: string
@@ -116,26 +106,18 @@ router.post('/', usuarioValidate.authAdmin , function(req, res, next){
  *        description: Success
  */
 router.put("/:id", usuarioValidate.authAdmin, function(req, res){
-    // productos[req.body.indice].nombre = req.body.nombre;
-    // productos[req.body.indice].precio = req.body.precio;
-
     productsController.updateProduct(req, res)
   
 })
 
 /**
  * @swagger
- * /productos:
+ * /productos/{id}:
  *  delete:
  *    description: eliminar Producto
  *    parameters:
- *    - name: indice
+ *    - name: id
  *      description: id de producto a eliminar
- *      in: formData
- *      required: true
- *      type: string
- *    - name: username
- *      description: perfil de usuario
  *      in: formData
  *      required: true
  *      type: string
@@ -145,7 +127,6 @@ router.put("/:id", usuarioValidate.authAdmin, function(req, res){
  */
 router.delete('/:id', usuarioValidate.authAdmin, function(req, res){
     
-
     productsController.deleteProduct(req, res)
 
 })
