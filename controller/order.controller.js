@@ -5,8 +5,10 @@ const orderModel = require('../models/pedidos')(connection, Sequelize);
 const { Op } = require("sequelize");
 const productsModel = require('../models/productos')(connection, Sequelize);
 const productsOrderModel = require('../models/products_order')(connection, Sequelize);
-const token = require('../middlewares/usuarios')
+const token = require('../middlewares/usuarios');
+const orderStatusModel = require('../models/order_status')(connection, Sequelize);
 const usersModel = require('../models/usuarios')(connection, Sequelize);
+
 
 let lastId;
 const listOrder = async() => await orderModel.findAll();
@@ -210,7 +212,32 @@ const updateOrder = async(req,res) => {
 
 
     }
+
+const updateOrderState = async(req, res) =>{
+    const stateOrderModel = await orderModel.findOne({
+        where:{
+            idOrder : req.body.orderId
+        }
+    })
+    if (stateOrderModel){
+        const stateOld = stateOrderModel.dataValues.id_state_order
+        const updateState = await orderModel.update({    
+            id_state_order : req.body.newState},
+            {
+                where:{
+                    idOrder : parseInt(req.body.orderId)
+                }
+            }
+        )
+        res.status(200).json({msg: "Estado modificado"})
+    } 
+    else(
+       res.status(404).json("ID not Found")
+    )
+    return stateOrderModel;
+}
 module.exports = {listOrder,
                   userOrder,
                   createOrder,
-                  updateOrder}
+                  updateOrder,
+                  updateOrderState}

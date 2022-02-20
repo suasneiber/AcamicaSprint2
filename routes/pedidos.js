@@ -168,18 +168,13 @@ router.put('/modificar/:id_order', midUsuario.auth, function(req, res){
  *  put:
  *    description: Modificar Estado
  *    parameters:
- *    - name: indice
- *      description: indice de pedido
+ *    - name: orderId
+ *      description: id de pedido
  *      in: formData
  *      required: true
  *      type: string
- *    - name: estado
+ *    - name: newState
  *      description: estado de pedido
- *      in: formData
- *      required: true
- *      type: string
- *    - name: username
- *      description: rol de usuario
  *      in: formData
  *      required: true
  *      type: string
@@ -188,8 +183,6 @@ router.put('/modificar/:id_order', midUsuario.auth, function(req, res){
  *        description: Success
  */
 router.put('/modificarEstado', midUsuario.authAdmin, function(req, res){
-    pedidos[req.body.indice].estado = req.body.estado;
-    
-    res.send("Estado modificado")
+    ordersController.updateOrderState(req,res)
 })
 module.exports = router;

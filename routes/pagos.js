@@ -63,12 +63,12 @@ router.post('/', midUsuario.authAdmin, function(req, res){
  *  put:
  *    description: Modificar Medio de Pago
  *    parameters:
- *    - name: indice
+ *    - name: idPay
  *      description: id del medio de pago a modificar
  *      in: formData
  *      required: true
  *      type: string
- *    - name: medio
+ *    - name: newName
  *      description: medio de pago
  *      in: formData
  *      required: true
@@ -78,9 +78,8 @@ router.post('/', midUsuario.authAdmin, function(req, res){
  *        description: Success
  */
 router.put('/',midUsuario.authAdmin, function(req, res){
-    
-        pagos[req.body.indice].medio = req.body.medio
-        res.send('medio de pago modificado.')
+    paysController.updatePay(req, res)    
+        
    
 })
 
@@ -92,13 +91,8 @@ router.put('/',midUsuario.authAdmin, function(req, res){
  *  delete:
  *    description: eliminar Medio de pago
  *    parameters:
- *    - name: indice
+ *    - name: idPay
  *      description: id del medio de pago a eliminar
- *      in: formData
- *      required: true
- *      type: string
- *    - name: username
- *      description: perfil de usuario
  *      in: formData
  *      required: true
  *      type: string
@@ -108,7 +102,6 @@ router.put('/',midUsuario.authAdmin, function(req, res){
  */
 
 router.delete('/', midUsuario.authAdmin, function(req, res){
-    pagos.splice(req.body.indice, 1);
-    res.send('Medio de Pago Eliminado')
+  paysController.payDelete(req, res);
 })
 module.exports = router;
