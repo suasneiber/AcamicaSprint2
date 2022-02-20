@@ -1,8 +1,12 @@
 # sprint-proyect
 
-primer sprint proyect acamica
+Segundo sprint proyect acamica
 
-git clone https://github.com/suasneiber/sprint-proyect1-acamica
+git clone https://github.com/suasneiber/AcamicaSprint2
 cd sprint-proyect
 npm install
 nodemon index.js
+
+importar base de datos sql resto_acamica.
+usuario admin : admin@resto.com
+clave: 0202
